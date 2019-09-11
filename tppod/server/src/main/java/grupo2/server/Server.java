@@ -35,7 +35,7 @@ public class Server {
             LOGGER.info("Fiscalization service bound.");
 
             Thread.sleep(30_000);
-            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.Jungle,Party.TIGER,null,null));
+            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.JUNGLE,Party.TIGER,null,null));
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");

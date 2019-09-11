@@ -4,15 +4,17 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import grupo2.api.Party;
-import grupo2.api.Province;
-import grupo2.api.Vote;
+import grupo2.api.*;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,10 +34,9 @@ public class VoteClient {
         String path = parsedCommandLine.getOptionValue("P");
         String ipAdd = parsedCommandLine.getOptionValue("A");
         System.out.println("ipAdd = '"+ipAdd+"', path ='"+path+"'");
-        List<Vote> votes = parseVotes(path);
 
-        connectToService(ipAdd);
-        sendVotes(votes);
+        List<Vote> votes = parseVotes(path);
+        sendVotes(votes,ipAdd);
     }
 
     private static List<Vote> parseVotes(String path) {
@@ -67,13 +68,17 @@ public class VoteClient {
         return votes;
     }
 
-    private static void connectToService(String ipAdd) {
+    private static void sendVotes(List<Vote> votes, String ipAddress) {
+        try{
+            final VoteService handle = (VoteService) Naming.lookup(ipAddress);
 
-    }
-
-
-    private static void sendVotes(List<Vote> votes) {
-
+            for(Vote v : votes){
+                handle.registerVote(v);
+            }
+        } catch (RemoteException | NotBoundException | MalformedURLException e) {
+            System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'");
+            System.exit(-1);
+        }
     }
 
     private static CommandLine getParsedCommandLine(String[] args) throws ParseException {
