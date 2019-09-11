@@ -70,8 +70,7 @@ public class ConsultingClient {
     private static void outputResults(List<Result> results, String path) {
         try(FileWriter fw =new FileWriter(path)){
             StatefulBeanToCsv<Result> beanWriter = new StatefulBeanToCsvBuilder<Result>(fw).build();
-
-            beanWriter.write(results);
+            beanWriter.write(results); //todo: ; separator. Change Header Names.
 
         } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
             e.printStackTrace(); //todo: handle
