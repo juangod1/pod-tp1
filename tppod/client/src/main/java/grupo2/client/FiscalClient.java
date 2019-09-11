@@ -2,6 +2,7 @@ package grupo2.client;
 
 import grupo2.api.*;
 import jdk.nashorn.internal.runtime.logging.DebugLogger;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,50 +16,74 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Optional;
 
+import static java.lang.System.exit;
+
 public class FiscalClient {
     private static Logger LOGGER = LoggerFactory.getLogger(VoteListener.class);
 
     public static void main(String[] args) {
-       /* String serverAddress = System.getProperty("serverAddress");
-
-        if (serverAddress == null) {
-            System.err.println("serverAddress must be specified");
-            return;
+        CommandLine parsedCommandLine = null;
+        try{
+            parsedCommandLine = getParsedCommandLine(args);
+        }
+        catch (ParseException e){
+            System.err.println("Unexpected Command line arguments: '"+e.getMessage()+"'");
+            exit(-1);
         }
 
-        String idString = System.getProperty("id");
-        if (idString == null) {
-            System.err.println("id must be specified");
-            return;
-        }
-        int id = Integer.parseInt(idString);
+        Party party = Party.valueOf(parsedCommandLine.getOptionValue("N"));
+        int tableId = Integer.parseInt(parsedCommandLine.getOptionValue("I")); //todo: se podria usar el cast built-in de CLI
+        String ipAdd = parsedCommandLine.getOptionValue("A");
 
-        String partyString = System.getProperty("partyName");
-        if (partyString == null) {
-            System.err.println("serverAddress must be specified");
-            return;
-        }
+        registerFiscal(ipAdd,party,tableId);
+    }
 
-        Party party;
-        try {
-            party = Party.valueOf(partyString);
-        } catch (IllegalArgumentException e) {
-            System.err.println("The specified party is not valid");
-            return;
-        }
-
-        */
+    private static void registerFiscal(String ipAdd, Party party, int tableId) {
         Fiscal fiscal = new Fiscal();
         try {
             UnicastRemoteObject.exportObject(fiscal,0);
-            final FiscalizationService handle = (FiscalizationService) Naming.lookup("//localhost:1099/fiscalization-service");
-            handle.register(fiscal, Party.TIGER, 1); // TODO: PArams
+            final FiscalizationService handle = (FiscalizationService) Naming.lookup(ipAdd);
+            handle.register(fiscal, party, tableId);
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");
+            exit(-1);
         } catch (NotBoundException | MalformedURLException e) {
             e.printStackTrace();
+            exit(-1);
         }
+    }
+
+    private static CommandLine getParsedCommandLine(String[] args) throws ParseException {
+        Options options = initializeOptions();
+        CommandLineParser parser = new DefaultParser();
+        return parser.parse(options, args);
+    }
+
+    private static Options initializeOptions() {
+        final Options options = new Options();
+        options.addOption(Option.builder("A")
+                .longOpt("DserverAddress")
+                .required()
+                .desc( "Dirección IP y el puerto donde está publicado el servicio de votación."  )
+                .hasArg()
+                .argName( "IPADD" )
+                .build());
+        options.addOption(Option.builder("I")
+                .required()
+                .longOpt("Did")
+                .desc("El número de la mesa de votación a fiscalizar")
+                .hasArg()
+                .argName( "NUMBER" )
+                .build());
+        options.addOption(Option.builder("N")
+                .required()
+                .longOpt("Dparty")
+                .desc("El nombre del partido político del fiscal.")
+                .hasArg()
+                .argName("NAME")
+                .build());
+        return options;
 
     }
 }

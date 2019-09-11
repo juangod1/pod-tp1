@@ -89,7 +89,6 @@ public class VoteClient {
 
     private static Options initializeOptions() {
         final Options options = new Options();
-        options.addOption(Option.builder("test").build());
         options.addOption(Option.builder("A")
                 .longOpt("DserverAddress")
                 .required()
