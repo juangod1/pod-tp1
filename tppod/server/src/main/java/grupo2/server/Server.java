@@ -1,9 +1,6 @@
 package grupo2.server;
 
-import grupo2.api.AdministrationService;
-import grupo2.api.FiscalizationService;
-import grupo2.api.Party;
-import grupo2.api.Vote;
+import grupo2.api.*;
 import grupo2.server.service.AdministrationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +35,7 @@ public class Server {
             LOGGER.info("Fiscalization service bound.");
 
             Thread.sleep(30_000);
-            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote(Party.TIGER, 100, 2));
+            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.Jungle,Party.TIGER,null,null));
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");

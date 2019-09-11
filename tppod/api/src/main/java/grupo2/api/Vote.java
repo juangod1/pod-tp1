@@ -4,26 +4,47 @@ import java.io.Serializable;
 import java.util.Optional;
 
 public class Vote implements Serializable {
-    static final long serialVersionUID = 145L;
+    static final long serialVersionUID = 146L;
     private final int ballotBox;
-    private final int position;
-    private Party party;
+    private Party vote1;
+    private Party vote2;
+    private Party vote3;
+    private Province province;
 
-    public Vote(Party party, int ballotBox, int position) {
-        this.party = party;
+    public Vote(int ballotBox, Province province, Party vote1, Party vote2, Party vote3) {
+        this.vote1= vote1;
+        this.vote2= vote2;
+        this.vote3= vote3;
         this.ballotBox = ballotBox;
-        this.position = position;
-    }
-
-    public Party getParty() {
-        return party;
+        this.province=province;
     }
 
     public int getBallotBox() {
         return ballotBox;
     }
 
-    public int getPosition() {
-        return position;
+    public Party getVote1() {
+        return vote1;
+    }
+
+    public Optional<Party> getVote2() {
+        return Optional.ofNullable(vote2);
+    }
+
+    public Optional<Party> getVote3() {
+        return Optional.ofNullable(vote3);
+    }
+
+    public Province getProvince() {
+        return province;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(vote1.name());
+        getVote2().ifPresent(party -> sb.append(',').append(party.name()));
+        getVote3().ifPresent(party -> sb.append(',').append(party.name()));
+        return sb.toString();
     }
 }

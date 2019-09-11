@@ -6,7 +6,6 @@
     <groupId>grupo2</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>grupo2</groupId>
   <artifactId>tppod-api</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>tppod-api</name>

@@ -18,7 +18,6 @@ import java.util.Optional;
 public class FiscalClient {
     private static Logger LOGGER = LoggerFactory.getLogger(VoteListener.class);
 
-
     public static void main(String[] args) {
        /* String serverAddress = System.getProperty("serverAddress");
 
