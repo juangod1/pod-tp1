@@ -1,6 +1,9 @@
 package grupo2.server;
 
 import grupo2.api.AdministrationService;
+import grupo2.api.FiscalizationService;
+import grupo2.api.Party;
+import grupo2.api.Vote;
 import grupo2.server.service.AdministrationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +24,26 @@ public class Server {
 
     public static void bindServices(){
         final AdministrationService adminService = new AdministrationServiceImpl();
+        final FiscalizationService fiscalizationService = new FiscalizationServiceImpl();
 
         try {
-            final Remote remote = UnicastRemoteObject.exportObject(adminService,0);
             final Registry registry = LocateRegistry.getRegistry();
-            registry.rebind("administration-service", remote);
+
+            final Remote remoteAdmin = UnicastRemoteObject.exportObject(adminService,0);
+            final Remote remoteFiscal = UnicastRemoteObject.exportObject(fiscalizationService,0);
+            registry.rebind("administration-service", remoteAdmin);
             LOGGER.info("Administration Service bound.");
+
+            registry.rebind("fiscalization-service", remoteFiscal);
+            LOGGER.info("Fiscalization service bound.");
+
+            Thread.sleep(30_000);
+            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote(Party.TIGER, 100, 2));
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

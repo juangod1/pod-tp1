@@ -9,11 +9,11 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-public class Client {
-    private static Logger logger = LoggerFactory.getLogger(Client.class);
+public class ManagementClient {
+    private static Logger logger = LoggerFactory.getLogger(ManagementClient.class);
 
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
-        logger.info("tppod Client Starting ...");
+        logger.info("tppod ManagementClient Starting ...");
 
         final AdministrationService handle = (AdministrationService) Naming.lookup("//localhost:1099/administration-service");
 
