@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Server {
     private static Logger LOGGER = LoggerFactory.getLogger(Server.class);
@@ -20,7 +22,7 @@ public class Server {
     }
 
     public static void bindServices(){
-        final AdministrationService adminService = new AdministrationServiceImpl();
+        final AdministrationService adminService = new AdministrationServiceImpl(new ElectionManager());
         final FiscalizationService fiscalizationService = new FiscalizationServiceImpl();
 
         try {
@@ -35,7 +37,7 @@ public class Server {
             LOGGER.info("Fiscalization service bound.");
 
             Thread.sleep(30_000);
-            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.JUNGLE,Party.TIGER,null,null));
+            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.JUNGLE, Collections.singletonList(Party.TIGER)));
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");

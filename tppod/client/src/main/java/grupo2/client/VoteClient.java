@@ -16,8 +16,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VoteClient {
 
@@ -50,16 +52,8 @@ public class VoteClient {
                 int mesa = Integer.valueOf(nextRecord[0]);
                 Province province = Province.valueOf(nextRecord[1]);
                 String[] votos = nextRecord[2].split(",");
-                Party vote1 = Party.valueOf(votos[0]);
-
-                Party vote2=null,vote3=null;
-                if(votos.length>1){
-                    vote2 = Party.valueOf(votos[1]);
-                }
-                if(votos.length>2){
-                    vote3 = Party.valueOf(votos[2]);
-                }
-                votes.add(new Vote(mesa,province,vote1,vote2,vote3));
+                List<Party> ranking = Arrays.stream(votos).map(Party::valueOf).collect(Collectors.toList());
+                votes.add(new Vote(mesa,province,ranking));
             }
         } catch (IOException e) {
             System.err.println("Unexpected path: '"+e.getMessage()+"'");
