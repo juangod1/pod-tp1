@@ -62,7 +62,7 @@ public class ConsultingClient {
             outputResults(results,path);
 
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
-            System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'");
+            System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'");//todo: handle remote exceptions...
             System.exit(-1);
         }
     }
@@ -73,7 +73,7 @@ public class ConsultingClient {
             beanWriter.write(results); //todo: ; separator. Change Header Names.
 
         } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
-            e.printStackTrace(); //todo: handle
+            e.printStackTrace(); //todo: handle writing exceptions...
             exit(-1);
         }
     }
