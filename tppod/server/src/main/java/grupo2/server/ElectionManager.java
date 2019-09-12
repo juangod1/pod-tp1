@@ -152,7 +152,7 @@ public class ElectionManager {
         writeLock.unlock();
     }
 
-    public void addVote(Vote vote) throws IllegalStateException {
+    public void addVote(Vote vote) {
         writeLock.lock();
         votes.add(vote);
         writeLock.unlock();
