@@ -151,4 +151,10 @@ public class ElectionManager {
         this.electionStatus = electionStatus;
         writeLock.unlock();
     }
+
+    public void addVote(Vote vote) throws IllegalStateException {
+        writeLock.lock();
+        votes.add(vote);
+        writeLock.unlock();
+    }
 }

@@ -24,7 +24,6 @@ public class AdministrationServiceImpl implements AdministrationService {
                 LOGGER.info("Started election.");
                 break;
             case STARTED:
-                // All is fine
                 break;
             case FINISHED:
                 throw new IllegalStateException("Tried to open a finished election.");
