@@ -1,4 +1,4 @@
-package grupo2.server.service;
+package grupo2.server;
 
 import grupo2.api.Vote;
 
