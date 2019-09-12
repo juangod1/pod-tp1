@@ -1,4 +1,6 @@
-package grupo2.api;
+package grupo2.client;
+
+import grupo2.api.Party;
 
 public class Result {
     private float percentage;
