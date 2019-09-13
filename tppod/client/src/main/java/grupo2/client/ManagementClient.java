@@ -1,7 +1,6 @@
 package grupo2.client;
 
 import grupo2.api.AdministrationService;
-import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +15,8 @@ public class ManagementClient {
     public static void main(String[] args){
         logger.info("tppod ManagementClient Starting ...");
 
-        CommandLine parsedCommandLine = null;
-        try{
-            parsedCommandLine = getParsedCommandLine(args);
-        }
-        catch (ParseException e){
-            System.err.println("Unexpected Command line arguments: '"+e.getMessage()+"'");
-            System.exit(-1);
-        }
-
-        ActionName action = ActionName.valueOf(parsedCommandLine.getOptionValue("N"));
-        String ipAdd = parsedCommandLine.getOptionValue("A");
+        ActionName action = ActionName.valueOf(System.getProperty("actionName"));
+        String ipAdd = System.getProperty("serverAddress");
 
         executeAction(ipAdd,action);
     }
@@ -52,33 +42,6 @@ public class ManagementClient {
             System.err.println("Unexpected IpAddress: '"+e.getMessage()+"'");//todo: handle remote exceptions...
             System.exit(-1);
         }
-    }
-
-
-    private static CommandLine getParsedCommandLine(String[] args) throws ParseException {
-        Options options = initializeOptions();
-        CommandLineParser parser = new DefaultParser();
-        return parser.parse(options, args);
-    }
-
-    private static Options initializeOptions() {
-        final Options options = new Options();
-        options.addOption(Option.builder("A")
-                .longOpt("DserverAddress")
-                .required()
-                .desc( "Dirección IP y el puerto donde está publicado el servicio de votación."  )
-                .hasArg()
-                .argName( "IPADD" )
-                .build());
-        options.addOption(Option.builder("N")
-                .required()
-                .longOpt("Daction")
-                .desc("El nombre de la acción a realizar.")
-                .hasArg()
-                .argName( "ACTIONNAME" )
-                .build());
-        return options;
-
     }
 
     enum ActionName{

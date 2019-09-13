@@ -4,8 +4,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import grupo2.api.*;
-import org.apache.commons.cli.*;
+import grupo2.api.ConsultService;
+import grupo2.api.ElectionResults;
+import grupo2.api.Party;
+import grupo2.api.Province;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,20 +24,12 @@ import static java.lang.System.exit;
 public class ConsultingClient {
 
     public static void main(String[] args){
-        CommandLine parsedCommandLine = null;
-        try{
-            parsedCommandLine = getParsedCommandLine(args);
-        }
-        catch (ParseException e){
-            System.err.println("Unexpected Command line arguments: '"+e.getMessage()+"'");
-            exit(-1);
-        }
 
-        String ipAdd = parsedCommandLine.getOptionValue("A");
-        String path = parsedCommandLine.getOptionValue("P");
+        String ipAdd = System.getProperty("serverAddress");
+        String path = System.getProperty("outPath");
 
-        String provinceStr = parsedCommandLine.getOptionValue("N");
-        String tableStr = parsedCommandLine.getOptionValue("I");
+        String provinceStr = System.getProperty("state");
+        String tableStr = System.getProperty("id");
 
 
         executeConsultation(ipAdd, path, provinceStr, tableStr);
@@ -83,50 +77,5 @@ public class ConsultingClient {
             resultList.add(new Result(entry.getKey(),entry.getValue().floatValue()));
         }
         return resultList;
-    }
-
-
-    private static CommandLine getParsedCommandLine(String[] args) throws ParseException {
-        Options options = initializeOptions();
-        CommandLineParser parser = new DefaultParser();
-        return parser.parse(options, args);
-    }
-
-    private static Options initializeOptions() {
-        final OptionGroup optionGroup = new OptionGroup();
-
-        optionGroup.addOption(Option.builder("N")
-                .longOpt("Dstate")
-                .required()
-                .desc( "El nombre de la provincia elegida para resolver la consulta 2"  )
-                .hasArg()
-                .argName( "NAME" )
-                .build());
-        optionGroup.addOption(Option.builder("I")
-                .longOpt("Did")
-                .required()
-                .desc( "el número de la mesa elegida para resolver la consulta 3."  )
-                .hasArg()
-                .argName( "ID" )
-                .build());
-
-        final Options options = new Options();
-        options.addOption(Option.builder("A")
-                .longOpt("DserverAddress")
-                .required()
-                .desc( "Dirección IP y el puerto donde está publicado el servicio de votación."  )
-                .hasArg()
-                .argName( "IPADD" )
-                .build());
-        options.addOption(Option.builder("P")
-                .required()
-                .longOpt("DoutPath")
-                .desc( "Path del archivo de salida con los resultados de la consulta elegida."  )
-                .hasArg()
-                .argName( "PATH" )
-                .build());
-        options.addOptionGroup(optionGroup);
-        return options;
-
     }
 }

@@ -5,7 +5,6 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import grupo2.api.*;
-import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -18,24 +17,14 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class VoteClient {
 
     public static void main(String[] args){
-        CommandLine parsedCommandLine = null;
-        try{
-            parsedCommandLine = getParsedCommandLine(args);
-        }
-        catch (ParseException e){
-            System.err.println("Unexpected Command line arguments: '"+e.getMessage()+"'");
-            System.exit(-1);
-        }
 
-        String path = parsedCommandLine.getOptionValue("P");
-        String ipAdd = parsedCommandLine.getOptionValue("A");
-        System.out.println("ipAdd = '"+ipAdd+"', path ='"+path+"'");
+        String path = System.getProperty("votesPath");
+        String ipAdd = System.getProperty("serverAddress");
 
         List<Vote> votes = parseVotes(path);
         sendVotes(votes,ipAdd);
@@ -73,31 +62,5 @@ public class VoteClient {
             System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'"); //todo: handle remote exceptions...
             System.exit(-1);
         }
-    }
-
-    private static CommandLine getParsedCommandLine(String[] args) throws ParseException {
-        Options options = initializeOptions();
-        CommandLineParser parser = new DefaultParser();
-        return parser.parse(options, args);
-    }
-
-    private static Options initializeOptions() {
-        final Options options = new Options();
-        options.addOption(Option.builder("A")
-                .longOpt("DserverAddress")
-                .required()
-                .desc( "Dirección IP y el puerto donde está publicado el servicio de votación."  )
-                .hasArg()
-                .argName( "IPADD" )
-                .build());
-        options.addOption(Option.builder("P")
-                .required()
-                .longOpt("DvotesPath")
-                .desc( "Path del archivo de entrada con los votos de los ciudadanos"  )
-                .hasArg()
-                .argName( "PATH" )
-                .build());
-        return options;
-
     }
 }
