@@ -2,9 +2,7 @@ package grupo2.server.election;
 
 import grupo2.api.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,9 +21,15 @@ public class ElectionManager {
     private final Lock readLock, writeLock;
     private ElectionStatus electionStatus;
 
+    // Cache results once election is finished
+    private ElectionResults finalNationalResults = null;
+    private final Map<Province, ElectionResults> finalProvincialResults = new EnumMap<>(Province.class);
+    private final Map<Integer, ElectionResults> finalTableResults = new HashMap<>();
+
+
 
     public ElectionManager() {
-        ReadWriteLock rwLock = new ReentrantReadWriteLock();
+        ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
         readLock = rwLock.readLock();
         writeLock = rwLock.writeLock();
         electionStatus = ElectionStatus.NOT_STARTED;
@@ -56,7 +60,7 @@ public class ElectionManager {
             case NOT_STARTED: throw new IllegalStateException("TODO");
             case STARTED: results = firstPastThePost();
                 break;
-            case FINISHED: results = new ElectionResults(new AlternativeVoteCalculator(votes).calculate(), electionStatus);
+            case FINISHED: results = getFinalNationalResults();
                 break;
         }
         readLock.unlock();
@@ -70,22 +74,66 @@ public class ElectionManager {
             case NOT_STARTED: throw new IllegalStateException("TODO");
             case STARTED: results = firstPastThePost(v -> v.getProvince() == p);
                 break;
-            case FINISHED:
-                List<Vote> provinceVotes = votes.stream().filter(v -> v.getProvince() == p).collect(toList());
-                SingleTransferableVoteCalculator calculator = new SingleTransferableVoteCalculator(provinceVotes, NUMBER_OF_PROVINCIAL_WINNERS);
-                results = new ElectionResults(calculator.calculate(), electionStatus);
+            case FINISHED: results = getFinalProvincialResults(p);
                 break;
         }
         readLock.unlock();
         return results;
     }
 
+    private ElectionResults getFinalProvincialResults(Province p) {
+        // No interesan mucho las race conditions aca, de ultima un par harán el trabajo duplicado.
+        // Preferimos eso a bloquear cosas que podrian suceder en paralelo porque no hay peligro de inconsistencias
+        if (finalProvincialResults.containsKey(p)) {
+            return finalProvincialResults.get(p);
+        }
+
+        List<Vote> provinceVotes = votes.stream().filter(v -> v.getProvince() == p).collect(toList());
+        SingleTransferableVoteCalculator calculator = new SingleTransferableVoteCalculator(provinceVotes, NUMBER_OF_PROVINCIAL_WINNERS);
+        ElectionResults result = new ElectionResults(calculator.calculate(), electionStatus);
+
+        finalProvincialResults.put(p, result);
+
+        return result;
+    }
+
+    // Este metodo si es synchronized -- solo el primero que lo pide deberia hacer el procesamiento, y
+    // que el resto esperen. Cuando el procesamiento ya esta hecho, lo unico que hace este metodo es un try/get exitoso,
+    // y no importa perder paralelismo en eso que es tan corto.
+    private synchronized ElectionResults getFinalNationalResults(){
+        if(finalNationalResults == null) {
+            finalNationalResults = new ElectionResults(new AlternativeVoteCalculator(votes).calculate(), electionStatus);
+        }
+        return finalNationalResults;
+    }
+
 
     public ElectionResults getTableResults(int table) {
+        ElectionResults results = null;
         readLock.lock();
-        ElectionResults results =  firstPastThePost(v -> v.getBallotBox() == table);
+        switch (electionStatus) {
+            case NOT_STARTED: throw new IllegalStateException("TODO");
+
+            case STARTED:
+                results =  firstPastThePost(v -> v.getBallotBox() == table);
+                break;
+
+            case FINISHED:
+                results = getFinalTableVote(table);
+                break;
+        }
         readLock.unlock();
         return results;
+    }
+
+    private ElectionResults getFinalTableVote(int table) {
+        // No interesan mucho las race conditions aca, de ultima un par harán el trabajo duplicado.
+        // Preferimos eso a bloquear cosas que podrian suceder en paralelo porque no hay peligro de inconsistencias
+        if (!finalTableResults.containsKey(table)) {
+                finalTableResults.put(table, firstPastThePost(v -> v.getBallotBox() == table));
+        }
+
+        return finalTableResults.get(table);
     }
 
     private ElectionResults firstPastThePost(Predicate<Vote> filter)
@@ -119,7 +167,12 @@ public class ElectionManager {
 
     public void addVote(Vote vote) {
         writeLock.lock();
-        votes.add(vote);
+        switch(electionStatus) {
+            case NOT_STARTED: throw new IllegalStateException("TODO"); // TODO
+            case STARTED: votes.add(vote);
+                break;
+            case FINISHED: throw new IllegalStateException("TODO"); // TODO
+        }
         writeLock.unlock();
     }
 }
