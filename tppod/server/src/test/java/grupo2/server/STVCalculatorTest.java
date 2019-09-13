@@ -1,10 +1,8 @@
 package grupo2.server;
 
 import grupo2.api.*;
-import org.junit.Before;
+import grupo2.server.election.SingleTransferableVoteCalculator;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 

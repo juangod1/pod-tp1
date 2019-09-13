@@ -1,6 +1,7 @@
 package grupo2.server;
 
 import grupo2.api.*;
+import grupo2.server.election.ElectionManager;
 import grupo2.server.service.AdministrationServiceImpl;
 import grupo2.server.service.FiscalizationServiceImpl;
 import org.slf4j.Logger;

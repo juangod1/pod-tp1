@@ -1,4 +1,4 @@
-package grupo2.server;
+package grupo2.server.election;
 
 import grupo2.api.Party;
 import grupo2.api.Vote;
@@ -10,7 +10,7 @@ import java.util.*;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
-public class SingleTransferableVoteCalculator {
+public class SingleTransferableVoteCalculator implements VoteCalculator {
     private Logger LOGGER = LoggerFactory.getLogger(SingleTransferableVoteCalculator.class);
     private List<Vote> allVotes;
     private double threshold;

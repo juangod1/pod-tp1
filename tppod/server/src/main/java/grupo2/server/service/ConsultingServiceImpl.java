@@ -1,8 +1,7 @@
 package grupo2.server.service;
 
 import grupo2.api.*;
-import grupo2.server.ElectionManager;
-import java.util.List;
+import grupo2.server.election.ElectionManager;
 
 public class ConsultingServiceImpl implements ConsultService {
     private ElectionManager em;

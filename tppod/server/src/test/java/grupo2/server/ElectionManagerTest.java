@@ -1,9 +1,9 @@
 package grupo2.server;
 
 import grupo2.api.*;
+import grupo2.server.election.ElectionManager;
 import org.junit.Before;
 import org.junit.Test;
-import grupo2.api.Party.*;
 
 
 import java.util.*;
@@ -64,10 +64,19 @@ public class ElectionManagerTest {
         generateVotes(2, 0, p, B,E,A,C,D).forEach(v -> em.notifyVote(v));
         generateVotes(1, 0, p, E,A,D,B,C).forEach(v -> em.notifyVote(v));
 
+        ElectionResults resultsBeforeClosing = em.getNationalResults(); // FPTP
+        Map<Party, Double> rbc = resultsBeforeClosing.getResults();
+        assertEquals(4, rbc.keySet().size());
+        assertEquals(3.0/20 + 4.0/20 + 2.0/20, rbc.get(B), EPS);
+        assertEquals(4.0/20, rbc.get(C), EPS);
+        assertEquals(6.0/20, rbc.get(D), EPS);
+        assertEquals(1.0/20, rbc.get(E), EPS);
+        assertEquals(0.0, resultsBeforeClosing.getResults(A), EPS);
+
         em.setElectionStatus(ElectionStatus.FINISHED);
         ElectionResults nationalResults = em.getNationalResults();
         assertEquals(ElectionStatus.FINISHED, em.getElectionStatus());
-
+        assertEquals(1, nationalResults.getResults().keySet().size());
         Map.Entry<Party, Double> winner = nationalResults.getResults().entrySet().stream().max(Comparator.comparingDouble(Map.Entry::getValue)).get();
         assertEquals(D, winner.getKey());
         assertEquals(11.0/20, winner.getValue(), EPS);
@@ -99,6 +108,14 @@ public class ElectionManagerTest {
         votes.addAll(generateVotes(30, 0, other, JACKALOPE, TURTLE));
 
         votes.forEach(v -> em.notifyVote(v));
+
+        ElectionResults partialResults = em.getProvincialResults(p);
+
+        assertEquals(10, partialResults.getResults().keySet().size());
+        assertEquals(15.0/300, partialResults.getResults(TARSIER), EPS);
+        assertEquals(99.0/300, partialResults.getResults(OWL), EPS);
+        assertEquals(48.0/300, partialResults.getResults(TIGER), EPS);
+
         em.setElectionStatus(ElectionStatus.FINISHED);
         ElectionResults results = em.getProvincialResults(p);
         Map<Party, Double> calculated = results.getResults();

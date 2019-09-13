@@ -2,7 +2,7 @@ package grupo2.server.service;
 
 import grupo2.api.*;
 import grupo2.api.ElectionStatus;
-import grupo2.server.ElectionManager;
+import grupo2.server.election.ElectionManager;
 import grupo2.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
