@@ -2,6 +2,7 @@ package grupo2.server;
 
 import grupo2.api.*;
 import grupo2.server.service.AdministrationServiceImpl;
+import grupo2.server.service.FiscalizationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Server {

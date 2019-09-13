@@ -49,7 +49,7 @@ public class ManagementClient {
                     break;
             }
         } catch (RemoteException |NotBoundException |MalformedURLException e) {
-            System.err.println("Unexpected IpAddress: '"+e.getMessage()+"'");
+            System.err.println("Unexpected IpAddress: '"+e.getMessage()+"'");//todo: handle remote exceptions...
             System.exit(-1);
         }
     }

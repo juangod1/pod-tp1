@@ -67,10 +67,10 @@ public class VoteClient {
             final VoteService handle = (VoteService) Naming.lookup(ipAddress);
 
             for(Vote v : votes){
-                handle.registerVote(v);
+                handle.registerVote(v); //todo: send votes in batch?
             }
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
-            System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'");
+            System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'"); //todo: handle remote exceptions...
             System.exit(-1);
         }
     }

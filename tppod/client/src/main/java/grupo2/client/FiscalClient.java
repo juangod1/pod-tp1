@@ -32,7 +32,7 @@ public class FiscalClient {
         }
 
         Party party = Party.valueOf(parsedCommandLine.getOptionValue("N"));
-        int tableId = Integer.parseInt(parsedCommandLine.getOptionValue("I")); //todo: se podria usar el cast built-in de CLI
+        int tableId = Integer.parseInt(parsedCommandLine.getOptionValue("I"));
         String ipAdd = parsedCommandLine.getOptionValue("A");
 
         registerFiscal(ipAdd,party,tableId);
@@ -46,7 +46,7 @@ public class FiscalClient {
             handle.register(fiscal, party, tableId);
         }
         catch(RemoteException e) {
-            LOGGER.info("Remote exception.");
+            LOGGER.info("Remote exception.");//todo: handle remote exceptions...
             exit(-1);
         } catch (NotBoundException | MalformedURLException e) {
             e.printStackTrace();

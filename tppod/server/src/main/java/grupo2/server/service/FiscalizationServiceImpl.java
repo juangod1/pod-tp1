@@ -1,10 +1,10 @@
-package grupo2.server;
+package grupo2.server.service;
 
 import grupo2.api.FiscalizationService;
 import grupo2.api.Party;
 import grupo2.api.Vote;
 import grupo2.api.VoteListener;
-import grupo2.server.service.VoteInformer;
+import grupo2.server.VoteInformer;
 
 import java.rmi.RemoteException;
 

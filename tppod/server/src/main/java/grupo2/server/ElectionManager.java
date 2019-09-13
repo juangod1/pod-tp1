@@ -157,4 +157,10 @@ public class ElectionManager {
         this.electionStatus = electionStatus;
         writeLock.unlock();
     }
+
+    public void addVote(Vote vote) {
+        writeLock.lock();
+        votes.add(vote);
+        writeLock.unlock();
+    }
 }
