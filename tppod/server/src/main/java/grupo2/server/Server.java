@@ -22,8 +22,10 @@ public class Server {
     }
 
     public static void bindServices(){
-        final AdministrationService adminService = new AdministrationServiceImpl(new ElectionManager());
-        final FiscalizationService fiscalizationService = new FiscalizationServiceImpl();
+        ElectionManager manager = new ElectionManager();
+        final AdministrationService adminService = new AdministrationServiceImpl(manager);
+        final FiscalizationServiceImpl fiscalizationService = new FiscalizationServiceImpl();
+        manager.register(fiscalizationService);
 
         try {
             final Registry registry = LocateRegistry.getRegistry();
@@ -37,7 +39,7 @@ public class Server {
             LOGGER.info("Fiscalization service bound.");
 
             Thread.sleep(30_000);
-            ((FiscalizationServiceImpl) fiscalizationService).newVote(new Vote( 100, Province.JUNGLE, Collections.singletonList(Party.TIGER)));
+            manager.notifyVote(new Vote( 100, Province.JUNGLE, Collections.singletonList(Party.TIGER)));
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");

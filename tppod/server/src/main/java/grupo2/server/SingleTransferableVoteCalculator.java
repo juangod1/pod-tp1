@@ -140,7 +140,7 @@ public class SingleTransferableVoteCalculator {
             for (TransferableVoteSet t : votesConsidered) {
                 if (t.percentage >= threshold) {             // New winner!
                     LOGGER.debug("New winner {}", t.getParty());
-                    winners.put(t.getParty(), threshold); // Se paso de 20% asi que pongo 20% justo en el resultado
+                    winners.put(t.getParty(), threshold);   // Se paso de 20% asi que pongo 20% justo en el resultado
                     justWon.add(t);
                 } else {
                     stillRunning.add(t);
@@ -165,14 +165,6 @@ public class SingleTransferableVoteCalculator {
         }
 
 
-
-
-        // Elimininamos sus votos y iteramos
-        // Ordenados decreciente por porcentaje
-        List<TransferableVoteSet> sortedCandidates = votesConsidered.stream()
-                .sorted((x,y) -> Double.compare(y.getPercentage(), x.getPercentage())).collect(toList());
-
-
         // Si quedan los candidatos justos
         if (votesConsidered.size() + winners.keySet().size() == numberOfWinners) {
             // No me queda otra que devolver los que quedan
@@ -183,9 +175,14 @@ public class SingleTransferableVoteCalculator {
             return winners;
         }
 
+        // Buscamos el peor, elimininamos sus votos e iteramos
+        // Ordenados decreciente por porcentaje
+        List<TransferableVoteSet> sortedCandidates = votesConsidered.stream()
+                .sorted((x,y) -> Double.compare(y.getPercentage(), x.getPercentage())).collect(toList());
+
         List<TransferableVoteSet> survivingCandidates = sortedCandidates.subList(0, sortedCandidates.size() - 1);
         TransferableVoteSet eliminated = sortedCandidates.get(sortedCandidates.size() - 1);
-        transferVotes(eliminated, survivingCandidates, 1.0); // Transfer all votes from eliminated
+        transferVotes(eliminated, survivingCandidates, 1.0); // Transferir los votos del eliminado
         LOGGER.debug("{} gets eliminated", eliminated.getParty());
 
         // Sigo calculando ahora con uno menos

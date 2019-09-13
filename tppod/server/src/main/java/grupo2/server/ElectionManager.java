@@ -43,7 +43,7 @@ public class ElectionManager {
         // atras de alguien que cerró la elección
         votes.add(vote);
         writeLock.unlock();
-        observers.forEach(vo -> vo.newVote(vote)); //TODO: Tirar threads quizas overkill?
+        observers.forEach(vo -> vo.newVote(vote)); //TODO: Tirar threads. Quizas overkill?
         return true;
     }
 
