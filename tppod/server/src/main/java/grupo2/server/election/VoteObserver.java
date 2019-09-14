@@ -1,6 +1,6 @@
 package grupo2.server.election;
 
-import grupo2.api.Vote;
+import grupo2.api.model.Vote;
 
 import java.util.List;
 

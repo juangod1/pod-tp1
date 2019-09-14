@@ -1,7 +1,7 @@
 package grupo2.server.election;
 
-import grupo2.api.Party;
-import grupo2.api.Vote;
+import grupo2.api.model.Party;
+import grupo2.api.model.Vote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

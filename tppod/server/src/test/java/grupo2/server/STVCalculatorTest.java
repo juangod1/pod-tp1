@@ -1,12 +1,14 @@
 package grupo2.server;
 
-import grupo2.api.*;
+import grupo2.api.model.Party;
+import grupo2.api.model.Province;
+import grupo2.api.model.Vote;
 import grupo2.server.election.SingleTransferableVoteCalculator;
 import org.junit.Test;
 
 import java.util.*;
 
-import static grupo2.api.Party.*;
+import static grupo2.api.model.Party.*;
 import static junit.framework.Assert.assertEquals;
 
 public class STVCalculatorTest {

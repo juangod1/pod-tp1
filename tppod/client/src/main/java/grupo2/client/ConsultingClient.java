@@ -1,13 +1,9 @@
 package grupo2.client;
 
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import grupo2.api.ConsultService;
-import grupo2.api.ElectionResults;
-import grupo2.api.Party;
-import grupo2.api.Province;
+import grupo2.api.iface.ConsultService;
+import grupo2.api.model.ElectionResults;
+import grupo2.api.model.Party;
+import grupo2.api.model.Province;
 
 import java.io.FileWriter;
 import java.io.IOException;

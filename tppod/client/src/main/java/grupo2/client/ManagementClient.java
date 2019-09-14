@@ -1,6 +1,6 @@
 package grupo2.client;
 
-import grupo2.api.AdministrationService;
+import grupo2.api.iface.AdministrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

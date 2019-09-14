@@ -1,6 +1,6 @@
 package grupo2.server;
 
-import grupo2.api.*;
+import grupo2.api.iface.AdministrationService;
 import grupo2.server.election.ElectionManager;
 import grupo2.server.service.AdministrationServiceImpl;
 import grupo2.server.service.ConsultingServiceImpl;
@@ -14,7 +14,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collections;
 
 public class Server {
     private static Logger LOGGER = LoggerFactory.getLogger(Server.class);

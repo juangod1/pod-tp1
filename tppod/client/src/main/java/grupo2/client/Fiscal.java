@@ -1,8 +1,7 @@
 package grupo2.client;
 
-import grupo2.api.Party;
-import grupo2.api.Vote;
-import grupo2.api.VoteListener;
+import grupo2.api.model.Vote;
+import grupo2.api.iface.VoteListener;
 
 public class Fiscal implements VoteListener {
 

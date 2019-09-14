@@ -1,7 +1,7 @@
 package grupo2.server.election;
 
-import grupo2.api.Party;
-import grupo2.api.Vote;
+import grupo2.api.model.Party;
+import grupo2.api.model.Vote;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

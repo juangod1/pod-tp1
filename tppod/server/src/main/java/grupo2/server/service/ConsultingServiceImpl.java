@@ -1,7 +1,9 @@
 package grupo2.server.service;
 
-import grupo2.api.*;
-import grupo2.server.Server;
+import grupo2.api.iface.ConsultService;
+import grupo2.api.model.ElectionResults;
+import grupo2.api.model.ElectionStatus;
+import grupo2.api.model.Province;
 import grupo2.server.election.ElectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

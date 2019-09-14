@@ -1,8 +1,8 @@
 package grupo2.client;
 
-import grupo2.api.Party;
-import grupo2.api.Province;
-import grupo2.api.Vote;
+import grupo2.api.model.Party;
+import grupo2.api.model.Province;
+import grupo2.api.model.Vote;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static grupo2.api.Party.*;
+import static grupo2.api.model.Party.*;
 
 public class TestClient {
 

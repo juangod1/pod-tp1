@@ -1,9 +1,9 @@
 package grupo2.server.service;
 
-import grupo2.api.FiscalizationService;
-import grupo2.api.Party;
-import grupo2.api.Vote;
-import grupo2.api.VoteListener;
+import grupo2.api.iface.FiscalizationService;
+import grupo2.api.model.Party;
+import grupo2.api.model.Vote;
+import grupo2.api.iface.VoteListener;
 import grupo2.server.election.ElectionManager;
 import grupo2.server.election.VoteObserver;
 import org.slf4j.Logger;

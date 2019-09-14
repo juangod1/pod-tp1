@@ -1,6 +1,6 @@
 package grupo2.server.election;
 
-import grupo2.api.*;
+import grupo2.api.model.*;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;

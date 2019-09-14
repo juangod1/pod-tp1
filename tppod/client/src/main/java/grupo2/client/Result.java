@@ -1,6 +1,6 @@
 package grupo2.client;
 
-import grupo2.api.Party;
+import grupo2.api.model.Party;
 
 public class Result {
     private float percentage;

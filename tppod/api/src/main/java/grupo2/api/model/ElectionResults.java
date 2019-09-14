@@ -1,4 +1,4 @@
-package grupo2.api;
+package grupo2.api.model;
 
 import java.io.Serializable;
 import java.util.Map;

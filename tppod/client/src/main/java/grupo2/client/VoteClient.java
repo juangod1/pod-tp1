@@ -4,7 +4,10 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import grupo2.api.*;
+import grupo2.api.iface.VotingService;
+import grupo2.api.model.Party;
+import grupo2.api.model.Province;
+import grupo2.api.model.Vote;
 
 import java.io.IOException;
 import java.io.Reader;

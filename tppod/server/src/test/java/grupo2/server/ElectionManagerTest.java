@@ -1,6 +1,6 @@
 package grupo2.server;
 
-import grupo2.api.*;
+import grupo2.api.model.*;
 import grupo2.server.election.ElectionManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static grupo2.api.Party.*;
+import static grupo2.api.model.Party.*;
 import static junit.framework.Assert.assertEquals;
 
 public class ElectionManagerTest {

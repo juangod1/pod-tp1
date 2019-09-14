@@ -1,4 +1,6 @@
-package grupo2.api;
+package grupo2.api.iface;
+
+import grupo2.api.model.Vote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

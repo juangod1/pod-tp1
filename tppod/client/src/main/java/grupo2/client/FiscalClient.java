@@ -1,6 +1,8 @@
 package grupo2.client;
 
-import grupo2.api.*;
+import grupo2.api.iface.FiscalizationService;
+import grupo2.api.iface.VoteListener;
+import grupo2.api.model.Party;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
