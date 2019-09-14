@@ -1,6 +1,7 @@
 package grupo2.server.service;
 
 import grupo2.api.iface.FiscalizationService;
+import grupo2.api.model.ElectionStateException;
 import grupo2.api.model.Party;
 import grupo2.api.model.Vote;
 import grupo2.api.iface.VoteListener;
@@ -16,22 +17,32 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FiscalizationServiceImpl.class);
     private Map<Party, Map<Integer, List<VoteListener>>> listeners;
+    private ElectionManager em;
 
 
     public FiscalizationServiceImpl(ElectionManager manager) {
+        this.em = manager;
         this.listeners = new EnumMap<>(Party.class);
         Arrays.stream(Party.values()).forEach(p -> this.listeners.put(p, new HashMap<>()));
         manager.register(this);
     }
 
     @Override
-    public boolean register(VoteListener listener, Party party, int id) {
+    public boolean register(VoteListener listener, Party party, int id) throws ElectionStateException {
         LOGGER.debug("Register listener for Party {}, table {}", party, id);
 
-        Map<Integer, List<VoteListener>> partyFiscals = listeners.get(party);
-        partyFiscals.putIfAbsent(id, new ArrayList<>());
-        partyFiscals.get(id).add(listener);
-        return true;
+        switch (em.getElectionStatus()){
+            case NOT_STARTED:
+                Map<Integer, List<VoteListener>> partyFiscals = listeners.get(party);
+                partyFiscals.putIfAbsent(id, new ArrayList<>());
+                partyFiscals.get(id).add(listener);
+                return true;
+            case FINISHED:
+                throw new ElectionStateException("Elections have already finished.");
+            case STARTED:
+                throw new ElectionStateException("Elections have already began.");
+        }
+        return false;
     }
 
     private void notifyListenersOf(Party p, Vote vote) {

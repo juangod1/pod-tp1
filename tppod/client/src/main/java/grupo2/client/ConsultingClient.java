@@ -2,6 +2,7 @@ package grupo2.client;
 
 import grupo2.api.iface.ConsultService;
 import grupo2.api.model.ElectionResults;
+import grupo2.api.model.ElectionStateException;
 import grupo2.api.model.Party;
 import grupo2.api.model.Province;
 
@@ -50,7 +51,11 @@ public class ConsultingClient {
             }
             outputResults(results,path);
 
-        } catch (RemoteException | NotBoundException | MalformedURLException e) {
+        }catch (ElectionStateException e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        }
+        catch (RemoteException | NotBoundException | MalformedURLException e) {
             System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'");//todo: handle remote exceptions...
             System.exit(-1);
         }

@@ -2,6 +2,7 @@ package grupo2.client;
 
 import grupo2.api.iface.FiscalizationService;
 import grupo2.api.iface.VoteListener;
+import grupo2.api.model.ElectionStateException;
 import grupo2.api.model.Party;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +32,11 @@ public class FiscalClient {
             UnicastRemoteObject.exportObject(fiscal,0);
             final FiscalizationService handle = (FiscalizationService) Naming.lookup("//" + ipAdd + "/fiscalization-service");
             handle.register(fiscal, party, tableId);
+        }catch (ElectionStateException e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
         }
-        catch(RemoteException e) {
-            LOGGER.info("Remote exception.");//todo: handle remote exceptions...
-            exit(-1);
-        } catch (NotBoundException | MalformedURLException e) {
+        catch(RemoteException | NotBoundException | MalformedURLException e) {
             e.printStackTrace();
             exit(-1);
         }

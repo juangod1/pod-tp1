@@ -5,6 +5,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import grupo2.api.iface.VotingService;
+import grupo2.api.model.ElectionStateException;
 import grupo2.api.model.Party;
 import grupo2.api.model.Province;
 import grupo2.api.model.Vote;
@@ -61,7 +62,12 @@ public class VoteClient {
             for(Vote v : votes){
                 handle.addVote(v); //todo: send votes in batch?
             }
-        } catch (RemoteException | NotBoundException | MalformedURLException e) {
+        }
+        catch (ElectionStateException e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        }
+        catch (RemoteException | NotBoundException | MalformedURLException e) {
             System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'"); //todo: handle remote exceptions...
             System.exit(-1);
         }

@@ -1,6 +1,7 @@
 package grupo2.client;
 
 import grupo2.api.iface.AdministrationService;
+import grupo2.api.model.ElectionStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,9 @@ public class ManagementClient {
                     System.out.println(output);
                     break;
             }
+        }catch (ElectionStateException e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
         } catch (RemoteException |NotBoundException |MalformedURLException e) {
             System.err.println("Unexpected IpAddress: '"+e.getMessage()+"'");//todo: handle remote exceptions...
             System.exit(-1);

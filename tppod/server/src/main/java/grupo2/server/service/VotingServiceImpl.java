@@ -1,5 +1,6 @@
 package grupo2.server.service;
 
+import grupo2.api.model.ElectionStateException;
 import grupo2.api.model.ElectionStatus;
 import grupo2.api.model.Vote;
 import grupo2.api.iface.VotingService;
@@ -17,18 +18,18 @@ public class VotingServiceImpl implements VotingService {
     }
 
     @Override
-    public void addVote(Vote vote) throws IllegalStateException{
+    public void addVote(Vote vote) throws ElectionStateException{
         LOGGER.debug("Adding a vote for Province {} Table {}: {}", vote.getProvince(), vote.getBallotBox(), vote.getRanking());
 
         ElectionStatus status = em.getElectionStatus();
         switch(status){
             case NOT_STARTED:
-                throw new IllegalStateException("Poll has not opened yet.");
+                throw new ElectionStateException("Poll has not opened yet.");
             case STARTED:
                 em.addVote(vote);
                 break;
             case FINISHED:
-                throw new IllegalStateException("Poll has already closed.");
+                throw new ElectionStateException("Poll has already closed.");
         }
     }
 }
