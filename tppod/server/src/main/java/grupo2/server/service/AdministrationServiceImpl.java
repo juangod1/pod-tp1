@@ -17,7 +17,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
 
     @Override
-    public void openElection() throws IllegalStateException, ElectionStateException {
+    public void openElection() throws ElectionStateException {
         em.setElectionStatus(ElectionStatus.STARTED);
     }
 
@@ -27,7 +27,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
 
     @Override
-    public void closeElection() throws IllegalStateException, ElectionStateException {
+    public void closeElection() throws ElectionStateException {
         em.setElectionStatus(ElectionStatus.FINISHED);
     }
 
