@@ -9,6 +9,6 @@ import java.rmi.RemoteException;
 
 public interface ConsultService extends Remote {
     ElectionResults consultTotal() throws RemoteException, ElectionStateException;
-    ElectionResults consultProvince(Province province) throws RemoteException,ElectionStateException;
-    ElectionResults consultTable(int tableId) throws RemoteException,ElectionStateException;
+    ElectionResults consultProvince(Province province) throws RemoteException, ElectionStateException;
+    ElectionResults consultTable(int tableId) throws RemoteException, ElectionStateException;
 }

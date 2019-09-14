@@ -41,23 +41,18 @@ public class ElectionManager {
         }
     }
 
-    public boolean notifyVote(Vote vote) {
-        writeLock.lock();
-        // TODO: Si la eleccion ya cerro devolver un error de "muy tarde amigo" (retornar false)
-        // Es importante tomar el lock antes de leer el estado de la elección
-        // aunque sea una operación de lectura, porque quizas espero el lock de write
-        // atras de alguien que cerró la elección
-        votes.add(vote);
-        writeLock.unlock();
+    private boolean notifyVote(Vote vote) {
         observers.forEach(vo -> vo.newVote(vote)); //TODO: Tirar threads. Quizas overkill?
         return true;
     }
 
-    public ElectionResults getNationalResults() {
+    public ElectionResults getNationalResults() throws ElectionStateException {
         readLock.lock();
         ElectionResults results = null;
         switch (electionStatus) {
-            case NOT_STARTED: throw new IllegalStateException("TODO");
+            case NOT_STARTED:
+                readLock.unlock();
+                throw new ElectionStateException("Election has not started!");
             case STARTED: results = firstPastThePost();
                 break;
             case FINISHED: results = getFinalNationalResults();
@@ -67,11 +62,13 @@ public class ElectionManager {
         return results;
     }
 
-    public ElectionResults getProvincialResults(Province p) {
+    public ElectionResults getProvincialResults(Province p) throws ElectionStateException {
         readLock.lock();
         ElectionResults results = null;
         switch (electionStatus) {
-            case NOT_STARTED: throw new IllegalStateException("TODO");
+            case NOT_STARTED:
+                readLock.unlock();
+                throw new ElectionStateException("Election has not started!");
             case STARTED: results = firstPastThePost(v -> v.getProvince() == p);
                 break;
             case FINISHED: results = getFinalProvincialResults(p);
@@ -108,11 +105,13 @@ public class ElectionManager {
     }
 
 
-    public ElectionResults getTableResults(int table) {
+    public ElectionResults getTableResults(int table) throws ElectionStateException {
         ElectionResults results = null;
         readLock.lock();
         switch (electionStatus) {
-            case NOT_STARTED: throw new IllegalStateException("TODO");
+            case NOT_STARTED:
+                readLock.unlock();
+                throw new ElectionStateException("Election has not started!");
 
             case STARTED:
                 results =  firstPastThePost(v -> v.getBallotBox() == table);
@@ -154,24 +153,37 @@ public class ElectionManager {
         return electionStatus;
     }
 
-    public void setElectionStatus(ElectionStatus electionStatus) {
+    public void setElectionStatus(ElectionStatus electionStatus) throws ElectionStateException {
         // Usar el mismo writeLock que para la lista de votos asegura un par de cosas
         //   1. Si alguien esta consultando la lista de votos para computar resultados parciales
         //      entonces no se le "cierra" la eleccion en el medio
         //   2. Si hay votos todavia pendientes de emision, van a estar en la cola de este lock
         //      y van a entrar antes de que cierre la eleccioon
         writeLock.lock();
-        this.electionStatus = electionStatus;
-        writeLock.unlock();
+        if(this.electionStatus==ElectionStatus.NOT_STARTED && electionStatus==ElectionStatus.STARTED ||
+            this.electionStatus==ElectionStatus.STARTED && electionStatus==ElectionStatus.FINISHED){
+
+            this.electionStatus = electionStatus;
+            writeLock.unlock();
+        }
+        else{
+            writeLock.unlock();
+            throw new ElectionStateException(String.format("Illegal election state change. from %s to %s",this.electionStatus,electionStatus));
+        }
     }
 
-    public void addVote(Vote vote) {
+    public void addVote(Vote vote) throws ElectionStateException {
         writeLock.lock();
         switch(electionStatus) {
-            case NOT_STARTED: throw new IllegalStateException("TODO"); // TODO
-            case STARTED: votes.add(vote);
+            case NOT_STARTED:
+                throw new ElectionStateException("Can't register vote. Election hasn't began!");
+            case STARTED:
+                votes.add(vote);
+                notifyVote(vote);
                 break;
-            case FINISHED: throw new IllegalStateException("TODO"); // TODO
+            case FINISHED:
+                writeLock.unlock();
+                throw new ElectionStateException("Can't register vote. Election has already finished");
         }
         writeLock.unlock();
     }

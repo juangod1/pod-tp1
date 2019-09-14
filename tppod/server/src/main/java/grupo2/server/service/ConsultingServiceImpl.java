@@ -19,47 +19,20 @@ public class ConsultingServiceImpl implements ConsultService {
     }
 
     @Override
-    public ElectionResults consultTotal() throws ElectionStateException{
+    public ElectionResults consultTotal() throws ElectionStateException {
         LOGGER.debug("Consult total");
-
-        ElectionStatus status = em.getElectionStatus();
-        switch(status){
-            case NOT_STARTED:
-                throw new ElectionStateException("Elections have not yet started.");
-            case STARTED:
-            case FINISHED:
-                return em.getNationalResults();
-        }
-        return null;
+        return em.getNationalResults();
     }
 
     @Override
-    public ElectionResults consultProvince(Province province) throws ElectionStateException{
+    public ElectionResults consultProvince(Province province) throws ElectionStateException {
         LOGGER.debug("Consult province {}", province);
-
-        ElectionStatus status = em.getElectionStatus();
-        switch(status){
-            case NOT_STARTED:
-                throw new ElectionStateException("Elections have not yet started.");
-            case STARTED:
-            case FINISHED:
-                return em.getProvincialResults(province);
-        }
-        return null;
+        return em.getProvincialResults(province);
     }
 
     @Override
     public ElectionResults consultTable(int tableId) throws ElectionStateException {
         LOGGER.debug("Consult table {}", tableId);
-
-        ElectionStatus status = em.getElectionStatus();
-        switch(status){
-            case NOT_STARTED:
-                throw new ElectionStateException("Elections have not yet started.");
-            case STARTED:
-            case FINISHED:
-                return em.getTableResults(tableId);
-        }
-        return null;
+        return em.getTableResults(tableId);
     }
 }

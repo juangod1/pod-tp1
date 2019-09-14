@@ -17,19 +17,8 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
 
     @Override
-    public void openElection() throws ElectionStateException {
-        ElectionStatus state = em.getElectionStatus();
-        switch(state){
-            case NOT_STARTED:
-                em.setElectionStatus(ElectionStatus.STARTED);
-                LOGGER.info("Started election.");
-                break;
-            case STARTED:
-                LOGGER.info("Attempted to start an already started election. No effects.");
-                break;
-            case FINISHED:
-                throw new ElectionStateException("Tried to open a finished election.");
-        }
+    public void openElection() throws IllegalStateException, ElectionStateException {
+        em.setElectionStatus(ElectionStatus.STARTED);
     }
 
     @Override
@@ -38,20 +27,8 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
 
     @Override
-    public void closeElection() throws ElectionStateException {
-        ElectionStatus state = em.getElectionStatus();
-
-        switch(state){
-            case NOT_STARTED:
-                throw new ElectionStateException("Tried to close an election that has not started.");
-            case STARTED:
-                em.setElectionStatus(ElectionStatus.FINISHED);
-                LOGGER.info("Closed election.");
-                break;
-            case FINISHED:
-                LOGGER.info("Attempted to end an already stopped election. No effects.");
-                break;
-        }
+    public void closeElection() throws IllegalStateException, ElectionStateException {
+        em.setElectionStatus(ElectionStatus.FINISHED);
     }
 
 }

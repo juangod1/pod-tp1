@@ -16,7 +16,7 @@ public class ElectionManagerTest {
     private static final double EPS = 0.00001;
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws ElectionStateException {
         em = new ElectionManager();
         em.setElectionStatus(ElectionStatus.STARTED);
     }
@@ -31,15 +31,23 @@ public class ElectionManagerTest {
         return votes;
     }
 
+    private void notifyVote(Vote v){
+        try {
+            em.addVote(v);
+        } catch (ElectionStateException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
-    public void tableElectionResultTests() {
+    public void tableElectionResultTests() throws ElectionStateException {
         int TARGET_BOX = 0;
         int OTHER_BOX = 1;
-        generateVotes(10, TARGET_BOX, Province.JUNGLE, Party.BUFFALO​).forEach(v -> em.notifyVote(v));
-        generateVotes(30, TARGET_BOX, Province.JUNGLE, Party.MONKEY).forEach(v -> em.notifyVote(v));
-        generateVotes(60, TARGET_BOX, Province.JUNGLE, Party.OWL).forEach(v -> em.notifyVote(v));
+        generateVotes(10, TARGET_BOX, Province.JUNGLE, Party.BUFFALO​).forEach(this::notifyVote);
+        generateVotes(30, TARGET_BOX, Province.JUNGLE, Party.MONKEY).forEach(this::notifyVote);
+        generateVotes(60, TARGET_BOX, Province.JUNGLE, Party.OWL).forEach(this::notifyVote);
 
-        generateVotes(60, OTHER_BOX, Province.JUNGLE, Party.SNAKE, null, null).forEach(v -> em.notifyVote(v));
+        generateVotes(60, OTHER_BOX, Province.JUNGLE, Party.SNAKE, null, null).forEach(this::notifyVote);
 
         ElectionResults es = em.getTableResults(TARGET_BOX);
         assertEquals(0.1, es.getResults(Party.BUFFALO​), EPS);
@@ -50,19 +58,19 @@ public class ElectionManagerTest {
 
 
     @Test
-    public void alternativeVotingTest() {
+    public void alternativeVotingTest() throws ElectionStateException {
         Province p = Province.JUNGLE;
         Party A = Party.BUFFALO​;
         Party B = Party.GORILLA;
         Party C = Party.JACKALOPE;
         Party D = Party.LEOPARD;
         Party E = Party.SNAKE;
-        generateVotes(3, 0, p, B,C,A,D,E).forEach(v -> em.notifyVote(v));
-        generateVotes(4, 0, p, C,A,D,B,E).forEach(v -> em.notifyVote(v));
-        generateVotes(4, 0, p, B,D,C,A,E).forEach(v -> em.notifyVote(v));
-        generateVotes(6, 0, p, D,C,A,E,B).forEach(v -> em.notifyVote(v));
-        generateVotes(2, 0, p, B,E,A,C,D).forEach(v -> em.notifyVote(v));
-        generateVotes(1, 0, p, E,A,D,B,C).forEach(v -> em.notifyVote(v));
+        generateVotes(3, 0, p, B,C,A,D,E).forEach(this::notifyVote);
+        generateVotes(4, 0, p, C,A,D,B,E).forEach(this::notifyVote);
+        generateVotes(4, 0, p, B,D,C,A,E).forEach(this::notifyVote);
+        generateVotes(6, 0, p, D,C,A,E,B).forEach(this::notifyVote);
+        generateVotes(2, 0, p, B,E,A,C,D).forEach(this::notifyVote);
+        generateVotes(1, 0, p, E,A,D,B,C).forEach(this::notifyVote);
 
         ElectionResults resultsBeforeClosing = em.getNationalResults(); // FPTP
         Map<Party, Double> rbc = resultsBeforeClosing.getResults();
@@ -84,7 +92,7 @@ public class ElectionManagerTest {
 
 
     @Test
-    public void stvTest() {
+    public void stvTest() throws ElectionStateException {
         // El ejemplo del video
         Province p = Province.JUNGLE;
         List<Vote> votes = new ArrayList<>();
@@ -107,7 +115,7 @@ public class ElectionManagerTest {
         votes.addAll(generateVotes(30, 0, other, BUFFALO​, TURTLE));
         votes.addAll(generateVotes(30, 0, other, JACKALOPE, TURTLE));
 
-        votes.forEach(v -> em.notifyVote(v));
+        votes.forEach(this::notifyVote);
 
         ElectionResults partialResults = em.getProvincialResults(p);
 

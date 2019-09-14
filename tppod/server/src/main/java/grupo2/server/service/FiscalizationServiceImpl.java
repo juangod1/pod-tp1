@@ -29,10 +29,9 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
 
     @Override
     public boolean register(VoteListener listener, Party party, int id) throws ElectionStateException {
-        LOGGER.debug("Register listener for Party {}, table {}", party, id);
-
         switch (em.getElectionStatus()){
             case NOT_STARTED:
+                LOGGER.debug("Register listener for Party {}, table {}", party, id);
                 Map<Integer, List<VoteListener>> partyFiscals = listeners.get(party);
                 partyFiscals.putIfAbsent(id, new ArrayList<>());
                 partyFiscals.get(id).add(listener);

@@ -20,16 +20,6 @@ public class VotingServiceImpl implements VotingService {
     @Override
     public void addVote(Vote vote) throws ElectionStateException{
         LOGGER.debug("Adding a vote for Province {} Table {}: {}", vote.getProvince(), vote.getBallotBox(), vote.getRanking());
-
-        ElectionStatus status = em.getElectionStatus();
-        switch(status){
-            case NOT_STARTED:
-                throw new ElectionStateException("Poll has not opened yet.");
-            case STARTED:
-                em.addVote(vote);
-                break;
-            case FINISHED:
-                throw new ElectionStateException("Poll has already closed.");
-        }
+        em.addVote(vote);
     }
 }
