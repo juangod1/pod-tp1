@@ -16,8 +16,8 @@ public class TestClient {
 
 
     public static void main(String[] args) throws IOException {
-        generateCSV("client/src/main/resources/new.csv");
-        System.setProperty("serverAddress", "localhost");
+        generateCSV(1,"client/src/main/resources/new.csv");
+        System.setProperty("serverAddress", "127.0.0.1");
         management("open");
         vote("client/src/main/resources/new.csv");
         consulting("client/src/main/resources/national_parcial.csv", null, null);
@@ -46,9 +46,13 @@ public class TestClient {
 
         if(province != null) {
             System.setProperty("state", province);
+        } else {
+            System.clearProperty("state");
         }
         if (table != null) {
-            String tableStr = System.getProperty("id");
+            System.setProperty("id", table);
+        } else {
+            System.clearProperty("id");
         }
 
         ConsultingClient.main(new String[]{});
@@ -72,10 +76,9 @@ public class TestClient {
     }
 
 
-    private static void generateCSV(String path) throws IOException {
+    private static void generateCSV(int multiplier, String path) throws IOException {
         Province p = Province.JUNGLE;
         List<Vote> votes = new ArrayList<>();
-        int multiplier = 100;
         votes.addAll(generateVotes(multiplier * 15, 0, p, TARSIER, WHITE_GORILLA));
         votes.addAll(generateVotes(multiplier * 32, 0, p, GORILLA, TARSIER, WHITE_GORILLA));
         votes.addAll(generateVotes(multiplier * 64, 0, p, GORILLA, WHITE_GORILLA));

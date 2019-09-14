@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class VotingServiceImpl implements VotingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VotingServiceImpl.class);
     private ElectionManager em;
 
     public VotingServiceImpl(ElectionManager em) {
@@ -19,6 +19,8 @@ public class VotingServiceImpl implements VotingService {
 
     @Override
     public void addVote(Vote vote) throws IllegalStateException{
+        LOGGER.debug("Adding a vote for Province {} Table {}: {}", vote.getProvince(), vote.getBallotBox(), vote.getRanking());
+
         ElectionStatus status = em.getElectionStatus();
         switch(status){
             case NOT_STARTED:

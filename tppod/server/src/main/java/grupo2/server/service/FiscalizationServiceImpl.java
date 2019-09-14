@@ -26,6 +26,8 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
 
     @Override
     public boolean register(VoteListener listener, Party party, int id) {
+        LOGGER.debug("Register listener for Party {}, table {}", party, id);
+
         Map<Integer, List<VoteListener>> partyFiscals = listeners.get(party);
         partyFiscals.putIfAbsent(id, new ArrayList<>());
         partyFiscals.get(id).add(listener);
@@ -33,6 +35,8 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
     }
 
     private void notifyListenersOf(Party p, Vote vote) {
+        LOGGER.debug("Notifying listener of vote for {}", p);
+
         Map<Integer, List<VoteListener>> partyFiscals = listeners.get(p);
         Optional.ofNullable(partyFiscals.get(vote.getBallotBox()))
                         .ifPresent(ls -> ls.forEach(l -> {

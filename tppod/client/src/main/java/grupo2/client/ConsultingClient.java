@@ -42,7 +42,7 @@ public class ConsultingClient {
             if(provinceStr==null && tableStr == null){
                 results = handle.consultTotal();
             }
-            else if(provinceStr!=null){
+            else if(provinceStr != null){
                 Province province = Province.valueOf(provinceStr);
                 results = handle.consultProvince(province);
             }
