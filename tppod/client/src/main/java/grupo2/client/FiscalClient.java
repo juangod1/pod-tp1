@@ -16,7 +16,6 @@ public class FiscalClient {
     private static Logger LOGGER = LoggerFactory.getLogger(VoteListener.class);
 
     public static void main(String[] args) {
-
         Party party = Party.valueOf(System.getProperty("party"));
         int tableId = Integer.parseInt(System.getProperty("id"));
         String ipAdd = System.getProperty("serverAddress");
@@ -28,7 +27,7 @@ public class FiscalClient {
         Fiscal fiscal = new Fiscal();
         try {
             UnicastRemoteObject.exportObject(fiscal,0);
-            final FiscalizationService handle = (FiscalizationService) Naming.lookup(ipAdd);
+            final FiscalizationService handle = (FiscalizationService) Naming.lookup("//" + ipAdd + "/fiscalization-service");
             handle.register(fiscal, party, tableId);
         }
         catch(RemoteException e) {

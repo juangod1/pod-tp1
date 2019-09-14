@@ -24,7 +24,6 @@ import static java.lang.System.exit;
 public class ConsultingClient {
 
     public static void main(String[] args){
-
         String ipAdd = System.getProperty("serverAddress");
         String path = System.getProperty("outPath");
 
@@ -37,7 +36,7 @@ public class ConsultingClient {
 
     private static void executeConsultation(String ipAdd, String path, String provinceStr, String tableStr) {
         try{
-            final ConsultService handle = (ConsultService) Naming.lookup(ipAdd);
+            final ConsultService handle = (ConsultService) Naming.lookup("//" + ipAdd + "/consulting-service");
 
             ElectionResults results;
             if(provinceStr==null && tableStr == null){

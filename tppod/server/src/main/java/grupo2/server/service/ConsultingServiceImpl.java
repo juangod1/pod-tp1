@@ -30,7 +30,6 @@ public class ConsultingServiceImpl implements ConsultService {
             case NOT_STARTED:
                 throw new IllegalStateException("Elections have not yet started.");
             case STARTED:
-                return em.getNationalResults();
             case FINISHED:
                 return em.getProvincialResults(province);
         }
@@ -44,7 +43,6 @@ public class ConsultingServiceImpl implements ConsultService {
             case NOT_STARTED:
                 throw new IllegalStateException("Elections have not yet started.");
             case STARTED:
-                return em.getNationalResults();
             case FINISHED:
                 return em.getTableResults(tableId);
         }

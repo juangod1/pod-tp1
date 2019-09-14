@@ -4,6 +4,7 @@ import grupo2.api.FiscalizationService;
 import grupo2.api.Party;
 import grupo2.api.Vote;
 import grupo2.api.VoteListener;
+import grupo2.server.election.ElectionManager;
 import grupo2.server.election.VoteObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,10 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
     private Map<Party, Map<Integer, List<VoteListener>>> listeners;
 
 
-    public FiscalizationServiceImpl() {
+    public FiscalizationServiceImpl(ElectionManager manager) {
         this.listeners = new EnumMap<>(Party.class);
         Arrays.stream(Party.values()).forEach(p -> this.listeners.put(p, new HashMap<>()));
+        manager.register(this);
     }
 
     @Override

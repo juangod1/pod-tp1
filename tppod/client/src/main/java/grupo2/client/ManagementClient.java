@@ -14,7 +14,6 @@ public class ManagementClient {
 
     public static void main(String[] args){
         logger.info("tppod ManagementClient Starting ...");
-
         ActionName action = ActionName.valueOf(System.getProperty("actionName"));
         String ipAdd = System.getProperty("serverAddress");
 
@@ -23,7 +22,7 @@ public class ManagementClient {
 
     private static void executeAction(String ipAdd, ActionName action) {
         try{
-            final AdministrationService handle = (AdministrationService) Naming.lookup(ipAdd);
+            final AdministrationService handle = (AdministrationService) Naming.lookup("//" + ipAdd + "/administration-service");
             switch (action){
                 case open:
                     handle.openElection();

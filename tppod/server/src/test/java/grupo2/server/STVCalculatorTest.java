@@ -50,4 +50,5 @@ public class STVCalculatorTest {
         assertEquals(0.2, calculated.get(TIGER), EPS);
         assertEquals(0.16, calculated.get(TURTLE), EPS);
     }
+
 }

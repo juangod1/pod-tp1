@@ -98,8 +98,8 @@ public class ElectionManager {
     }
 
     // Este metodo si es synchronized -- solo el primero que lo pide deberia hacer el procesamiento, y
-    // que el resto esperen. Cuando el procesamiento ya esta hecho, lo unico que hace este metodo es un try/get exitoso,
-    // y no importa perder paralelismo en eso que es tan corto.
+    // que el resto esperen. Cuando el procesamiento ya esta hecho, lo unico que hace este metodo es una comparacion
+    // por null y un return y importa perder paralelismo en eso que es tan corto.
     private synchronized ElectionResults getFinalNationalResults(){
         if(finalNationalResults == null) {
             finalNationalResults = new ElectionResults(new AlternativeVoteCalculator(votes).calculate(), electionStatus);

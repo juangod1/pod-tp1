@@ -1,5 +1,8 @@
 package grupo2.api;
 
-public interface VotingService {
-    void addVote(Vote vote);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface VotingService extends Remote {
+    void addVote(Vote vote) throws RemoteException;
 }

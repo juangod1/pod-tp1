@@ -13,9 +13,9 @@
     <module>client</module>
   </modules>
   <properties>
+    <opencsv.version>4.0</opencsv.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.7.12</slf4j.version>
-    <opencsv.version>4.0</opencsv.version>
   </properties>
   <dependencyManagement>
     <dependencies>

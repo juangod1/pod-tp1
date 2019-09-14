@@ -26,8 +26,8 @@ public class VoteClient {
         String path = System.getProperty("votesPath");
         String ipAdd = System.getProperty("serverAddress");
 
-        List<Vote> votes = parseVotes(path);
-        sendVotes(votes,ipAdd);
+       List<Vote> votes = parseVotes(path);
+       sendVotes(votes,ipAdd);
     }
 
     private static List<Vote> parseVotes(String path) {
@@ -52,11 +52,11 @@ public class VoteClient {
     }
 
     private static void sendVotes(List<Vote> votes, String ipAddress) {
-        try{
-            final VoteService handle = (VoteService) Naming.lookup(ipAddress);
+        try {
+            final VotingService handle = (VotingService) Naming.lookup("//" + ipAddress + "/voting-service");
 
             for(Vote v : votes){
-                handle.registerVote(v); //todo: send votes in batch?
+                handle.addVote(v); //todo: send votes in batch?
             }
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
             System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'"); //todo: handle remote exceptions...

@@ -1,7 +1,10 @@
 package grupo2.api;
 
-public interface ConsultService {
-    ElectionResults consultTotal();
-    ElectionResults consultProvince(Province province);
-    ElectionResults consultTable(int tableId);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface ConsultService extends Remote {
+    ElectionResults consultTotal() throws RemoteException;
+    ElectionResults consultProvince(Province province) throws RemoteException;
+    ElectionResults consultTable(int tableId) throws RemoteException;
 }

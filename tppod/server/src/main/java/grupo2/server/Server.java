@@ -3,7 +3,9 @@ package grupo2.server;
 import grupo2.api.*;
 import grupo2.server.election.ElectionManager;
 import grupo2.server.service.AdministrationServiceImpl;
+import grupo2.server.service.ConsultingServiceImpl;
 import grupo2.server.service.FiscalizationServiceImpl;
+import grupo2.server.service.VotingServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,27 +27,32 @@ public class Server {
     public static void bindServices(){
         ElectionManager manager = new ElectionManager();
         final AdministrationService adminService = new AdministrationServiceImpl(manager);
-        final FiscalizationServiceImpl fiscalizationService = new FiscalizationServiceImpl();
-        manager.register(fiscalizationService);
+        final FiscalizationServiceImpl fiscalizationService = new FiscalizationServiceImpl(manager);
+        final ConsultingServiceImpl consultingService = new ConsultingServiceImpl(manager);
+        final VotingServiceImpl votingService = new VotingServiceImpl(manager);
 
         try {
             final Registry registry = LocateRegistry.getRegistry();
 
             final Remote remoteAdmin = UnicastRemoteObject.exportObject(adminService,0);
             final Remote remoteFiscal = UnicastRemoteObject.exportObject(fiscalizationService,0);
+            final Remote remoteConsulting = UnicastRemoteObject.exportObject(consultingService,0);
+            final Remote remoteVoting = UnicastRemoteObject.exportObject(votingService,0);
+
             registry.rebind("administration-service", remoteAdmin);
             LOGGER.info("Administration Service bound.");
 
             registry.rebind("fiscalization-service", remoteFiscal);
             LOGGER.info("Fiscalization service bound.");
 
-            Thread.sleep(30_000);
-            manager.notifyVote(new Vote( 100, Province.JUNGLE, Collections.singletonList(Party.TIGER)));
+            registry.rebind("consulting-service", remoteConsulting);
+            LOGGER.info("Consulting Service bound.");
+
+            registry.rebind("voting-service", remoteVoting);
+            LOGGER.info("Voting Service bound.");
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }
