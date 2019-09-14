@@ -27,7 +27,7 @@ public class FiscalClient {
     }
 
     private static void registerFiscal(String ipAdd, Party party, int tableId) {
-        Fiscal fiscal = new Fiscal();
+        Fiscal fiscal = new Fiscal(party);
         try {
             UnicastRemoteObject.exportObject(fiscal,0);
             final FiscalizationService handle = (FiscalizationService) Naming.lookup("//" + ipAdd + "/fiscalization-service");
