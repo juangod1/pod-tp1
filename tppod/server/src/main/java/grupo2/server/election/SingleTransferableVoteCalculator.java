@@ -165,8 +165,8 @@ public class SingleTransferableVoteCalculator implements VoteCalculator {
         }
 
 
-        // Si quedan los candidatos justos
-        if (votesConsidered.size() + winners.keySet().size() == numberOfWinners) {
+        // Si quedan los candidatos justos (o menos porque no votaron por todos)
+        if (votesConsidered.size() + winners.keySet().size() <= numberOfWinners) {
             // No me queda otra que devolver los que quedan
             LOGGER.debug("Remaining candidates are in");
             for(TransferableVoteSet tvs: votesConsidered) {

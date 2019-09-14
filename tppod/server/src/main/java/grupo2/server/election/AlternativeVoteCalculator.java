@@ -28,6 +28,9 @@ public class AlternativeVoteCalculator implements VoteCalculator {
     }
 
     private Map<Party, Double>  calculate(List<Vote> validVotes, Predicate<Party> filterPredicate) {
+        if(validVotes.isEmpty()) {
+            return new HashMap<>();
+        }
         // Alternative voting system
         double voteCount = this.votes.size();   // Los porcentajes son siempre sobre el total (aun filtrando blancos)
 
