@@ -16,8 +16,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.System.exit;
 
@@ -61,10 +63,13 @@ public class ConsultingClient {
     private static void outputResults(ElectionResults results, String path) {
         List<Result> parsedResults = parseResults(results);
         try(FileWriter fw =new FileWriter(path)){
-            StatefulBeanToCsv<Result> beanWriter = new StatefulBeanToCsvBuilder<Result>(fw).build();
-            beanWriter.write(parsedResults); //todo: ; separator. Change Header Names.
+            StringBuilder sb = new StringBuilder();
+            sb.append("Porcentaje;Partido\n");
+            parsedResults.forEach((r)->sb.append(String.format("%05.2f", 100*r.getPercentage()))
+                    .append("%;").append(r.getParty()).append('\n'));
+            fw.write(sb.toString());
 
-        } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
+        } catch (IOException e) {
             e.printStackTrace(); //todo: handle writing exceptions...
             exit(-1);
         }
@@ -75,6 +80,6 @@ public class ConsultingClient {
         for(Map.Entry<Party,Double> entry : results.getResults().entrySet()){
             resultList.add(new Result(entry.getKey(),entry.getValue().floatValue()));
         }
-        return resultList;
+        return resultList.stream().sorted(Comparator.comparing(x -> x.getParty().name())).collect(Collectors.toList());
     }
 }
