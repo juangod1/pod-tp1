@@ -16,13 +16,13 @@ public class TestClient {
 
 
     public static void main(String[] args) throws IOException {
-        generateCSV(1,"client/src/main/resources/new.csv");
+     //   generateCSV(1000,"client/src/main/resources/new.csv");
         System.setProperty("serverAddress", "127.0.0.1");
-        management("open");
-        vote("client/src/main/resources/new.csv");
-        consulting("client/src/main/resources/national_parcial.csv", null, null);
-        consulting("client/src/main/resources/provincial_parcial.csv", "JUNGLE", null);
-        consulting("client/src/main/resources/table_parcial.csv", null, "0");
+     //   management("open");
+    //   vote("client/src/main/resources/new.csv");
+      //  consulting("client/src/main/resources/national_parcial.csv", null, null);
+    //    consulting("client/src/main/resources/provincial_parcial.csv", "JUNGLE", null);
+     //   consulting("client/src/main/resources/table_parcial.csv", null, "1");
         management("close");
         consulting("client/src/main/resources/national_final.csv", null, null);
         consulting("client/src/main/resources/provincial_final.csv", "JUNGLE", null);

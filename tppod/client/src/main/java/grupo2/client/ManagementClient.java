@@ -15,10 +15,21 @@ public class ManagementClient {
 
     public static void main(String[] args){
         logger.info("tppod ManagementClient Starting ...");
-        ActionName action = ActionName.valueOf(System.getProperty("actionName"));
-        String ipAdd = System.getProperty("serverAddress");
+        ActionName action = null;
+        try {
+            action = ActionName.valueOf(System.getProperty("action"));
+        } catch (Exception e) {
+            logger.error("Action name" + System.getProperty("action") + "is invalid");
+            return;
+        }
 
-        executeAction(ipAdd,action);
+        String ipAdd = System.getProperty("serverAddress");
+        if(ipAdd == null) {
+            logger.error("You should specify the server's IP address");
+            return;
+        }
+
+        executeAction(ipAdd, action);
     }
 
     private static void executeAction(String ipAdd, ActionName action) {
