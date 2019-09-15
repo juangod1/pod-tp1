@@ -39,7 +39,7 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
             case FINISHED:
                 throw new ElectionStateException("Elections have already finished.");
             case STARTED:
-                throw new ElectionStateException("Elections have already began.");
+                throw new ElectionStateException("Elections have already begun.");
         }
         return false;
     }

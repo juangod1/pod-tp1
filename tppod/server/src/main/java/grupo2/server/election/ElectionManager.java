@@ -177,7 +177,7 @@ public class ElectionManager {
         switch(electionStatus) {
             case NOT_STARTED:
                 writeLock.unlock();
-                throw new ElectionStateException("Can't register vote. Election hasn't began!");
+                throw new ElectionStateException("Can't register vote. Election hasn't begun!");
             case STARTED:
                 votes.add(vote);
                 notifyVote(vote);
