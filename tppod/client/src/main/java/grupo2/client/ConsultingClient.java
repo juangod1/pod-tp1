@@ -66,7 +66,17 @@ public class ConsultingClient {
         try(FileWriter fw =new FileWriter(path)){
             StringBuilder sb = new StringBuilder();
             sb.append("Porcentaje;Partido\n");
-            parsedResults.forEach((r)->sb.append(String.format("%05.2f", 100*r.getPercentage()))
+            parsedResults
+                    .stream()
+                    .sorted((r1, r2) -> {
+                        int pctgCmp = Float.compare(r2.getPercentage(), r1.getPercentage());
+                        if(pctgCmp == 0) {
+                            return r1.getParty().toString().compareTo(r2.getParty().toString());
+                        } else {
+                            return pctgCmp;
+                        }
+                    })
+                    .forEach((r)->sb.append(String.format("%.2f", 100*r.getPercentage()))
                     .append("%;").append(r.getParty()).append('\n'));
             fw.write(sb.toString());
 

@@ -59,14 +59,23 @@ public class VoteClient {
         try {
             final VotingService handle = (VotingService) Naming.lookup("//" + ipAddress + "/voting-service");
 
-            for(Vote v : votes){
-                handle.addVote(v); //todo: send votes in batch?
-            }
+            votes.parallelStream().forEach(vote -> {
+                try {
+                    handle.addVote(vote);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (ElectionStateException e) {
+                    System.err.println(e.getMessage());
+                }
+            });
+            //for(Vote v : votes){
+            //    handle.addVote(v); //todo: send votes in batch?
+            //}
         }
-        catch (ElectionStateException e){
-            System.err.println(e.getMessage());
-            System.exit(-1);
-        }
+    //    catch (ElectionStateException e){
+    //        System.err.println(e.getMessage());
+    //        System.exit(-1);
+    //    }
         catch (RemoteException | NotBoundException | MalformedURLException e) {
             System.err.println("Unexpected ipAddress: '"+e.getMessage()+"'"); //todo: handle remote exceptions...
             System.exit(-1);

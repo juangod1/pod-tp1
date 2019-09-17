@@ -31,6 +31,7 @@ public class FiscalClient {
         try {
             UnicastRemoteObject.exportObject(fiscal,0);
             final FiscalizationService handle = (FiscalizationService) Naming.lookup("//" + ipAdd + "/fiscalization-service");
+            System.out.println("Fiscal of party " + party + " registered on polling place " + tableId);
             handle.register(fiscal, party, tableId);
         }catch (ElectionStateException e){
             System.err.println(e.getMessage());
