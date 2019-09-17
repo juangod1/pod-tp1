@@ -5,7 +5,7 @@
 - Para correr el servidor
     - Ejecutar el script `$DEPLOY_DIR/server/run-registry.sh`
     - En otra terminal, levantar el servidor ejecutando `$DEPLOY_DIR/server/run-server.sh`
-    - 
+
 - Para correr los clientes, se deben ejecutar los siguientes scripts:
     - Para el cliente de administración: `$DEPLOY_DIR/client/run-management.sh`
     - Para el cliente de fiscalización: `$DEPLOY_DIR/client/run-fiscal.sh`

@@ -1,6 +1,8 @@
 package grupo2.server.election;
 
 import grupo2.api.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -15,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 // los eventos de los cuales es responsable.
 public class ElectionManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElectionManager.class);
     private static final int NUMBER_OF_PROVINCIAL_WINNERS = 5;
     private final List<VoteObserver> observers = new ArrayList<>();
     private final List<Vote> votes = new ArrayList<>();
@@ -164,6 +167,7 @@ public class ElectionManager {
             this.electionStatus==ElectionStatus.STARTED && electionStatus==ElectionStatus.FINISHED){
 
             this.electionStatus = electionStatus;
+            LOGGER.debug("Changed election status to {}. #Votes = {}", electionStatus, votes.size());
             writeLock.unlock();
         }
         else{

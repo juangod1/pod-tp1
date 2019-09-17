@@ -18,6 +18,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 
     @Override
     public void openElection() throws ElectionStateException {
+        LOGGER.info("Received command: start election");
         em.setElectionStatus(ElectionStatus.STARTED);
     }
 
@@ -28,6 +29,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 
     @Override
     public void closeElection() throws ElectionStateException {
+        LOGGER.info("Received command: close election");
         em.setElectionStatus(ElectionStatus.FINISHED);
     }
 
