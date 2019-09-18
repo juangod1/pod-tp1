@@ -29,6 +29,10 @@ public class ConsultingClient {
         String provinceStr = System.getProperty("state");
         String tableStr = System.getProperty("id");
 
+        if(provinceStr!=null && tableStr!=null){
+            System.out.println("Impossible request. Solicit either table or province");
+            exit(-1);
+        }
 
         executeConsultation(ipAdd, path, provinceStr, tableStr);
     }
