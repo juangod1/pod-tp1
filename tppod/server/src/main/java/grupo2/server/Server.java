@@ -52,6 +52,7 @@ public class Server {
         }
         catch(RemoteException e) {
             LOGGER.info("Remote exception.");
+            LOGGER.error(e.getMessage());
         }
     }
 }

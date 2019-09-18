@@ -27,7 +27,11 @@ public class ElectionManager {
     // Cache results once election is finished
     private ElectionResults finalNationalResults = null;
     private final Map<Province, ElectionResults> finalProvincialResults = new EnumMap<>(Province.class);
-    private final Map<Integer, ElectionResults> finalTableResults = new HashMap<>();
+
+    private int maxTable = Integer.MIN_VALUE;
+    private int minTable = Integer.MAX_VALUE;
+    private ElectionResults[] finalTableResults;
+    private Object[] finalTableLocks;
 
 
 
@@ -45,7 +49,7 @@ public class ElectionManager {
     }
 
     private boolean notifyVote(Vote vote) {
-        observers.forEach(vo -> vo.newVote(vote)); //TODO: Tirar threads. Quizas overkill?
+        observers.forEach(vo -> vo.newVote(vote));
         return true;
     }
 
@@ -82,23 +86,24 @@ public class ElectionManager {
     }
 
     private ElectionResults getFinalProvincialResults(Province p) {
-        // No interesan mucho las race conditions aca, de ultima un par harán el trabajo duplicado.
-        // Preferimos eso a bloquear cosas que podrian suceder en paralelo porque no hay peligro de inconsistencias
-        if (finalProvincialResults.containsKey(p)) {
-            return finalProvincialResults.get(p);
+        synchronized (p) {      // Exclusion mutua para cada provincia
+            if (finalProvincialResults.containsKey(p)) {
+                return finalProvincialResults.get(p);
+            }
+
+            List<Vote> provinceVotes = votes.stream().filter(v -> v.getProvince() == p).collect(toList());
+            SingleTransferableVoteCalculator calculator = new SingleTransferableVoteCalculator(provinceVotes, NUMBER_OF_PROVINCIAL_WINNERS);
+            ElectionResults result = new ElectionResults(calculator.calculate(), electionStatus);
+
+            finalProvincialResults.put(p, result);
+
+            return result;
         }
-
-        List<Vote> provinceVotes = votes.stream().filter(v -> v.getProvince() == p).collect(toList());
-        SingleTransferableVoteCalculator calculator = new SingleTransferableVoteCalculator(provinceVotes, NUMBER_OF_PROVINCIAL_WINNERS);
-        ElectionResults result = new ElectionResults(calculator.calculate(), electionStatus);
-
-        finalProvincialResults.put(p, result);
-
-        return result;
     }
 
-    // Este metodo si es synchronized -- solo el primero que lo pide deberia hacer el procesamiento, y
-    // que el resto esperen. Cuando el procesamiento ya esta hecho, lo unico que hace este metodo es una comparacion
+    // Solo el primero que lo pide deberia hacer el procesamiento, y
+    // que el resto esperen.
+    // Cuando el procesamiento ya esta hecho, lo unico que hace este metodo es una comparacion
     // por null y un return y importa perder paralelismo en eso que es tan corto.
     private synchronized ElectionResults getFinalNationalResults(){
         if(finalNationalResults == null) {
@@ -125,17 +130,24 @@ public class ElectionManager {
                 break;
         }
         readLock.unlock();
+        LOGGER.debug("Consulted table {}", table);
         return results;
     }
 
     private ElectionResults getFinalTableVote(int table) {
-        // No interesan mucho las race conditions aca, de ultima un par harán el trabajo duplicado.
-        // Preferimos eso a bloquear cosas que podrian suceder en paralelo porque no hay peligro de inconsistencias
-        if (!finalTableResults.containsKey(table)) {
-                finalTableResults.put(table, firstPastThePost(v -> v.getBallotBox() == table));
+        if(table < minTable || table > maxTable) {
+            return new ElectionResults(new HashMap<>(), electionStatus); // Empty
         }
-
-        return finalTableResults.get(table);
+        int index = table - minTable;
+        synchronized (finalTableLocks[index]){
+            LOGGER.debug("Locked table {}", index);
+            if (finalTableResults[index] == null) {
+                LOGGER.debug("Calculating table {}", index);
+                finalTableResults[index] = firstPastThePost(v -> v.getBallotBox() == table);
+            }
+            LOGGER.debug("Unlocked table {}", index);
+        }
+        return finalTableResults[index];
     }
 
     private ElectionResults firstPastThePost(Predicate<Vote> filter)
@@ -161,16 +173,26 @@ public class ElectionManager {
         //   1. Si alguien esta consultando la lista de votos para computar resultados parciales
         //      entonces no se le "cierra" la eleccion en el medio
         //   2. Si hay votos todavia pendientes de emision, van a estar en la cola de este lock
-        //      y van a entrar antes de que cierre la eleccioon
+        //      y van a entrar antes de que cierre la eleccion
         writeLock.lock();
         if(this.electionStatus==ElectionStatus.NOT_STARTED && electionStatus==ElectionStatus.STARTED ||
             this.electionStatus==ElectionStatus.STARTED && electionStatus==ElectionStatus.FINISHED){
 
             this.electionStatus = electionStatus;
-            LOGGER.debug("Changed election status to {}. #Votes = {}", electionStatus, votes.size());
+            LOGGER.debug("Changed election status to {}. #Votes so far = {}", electionStatus, votes.size());
+
+            if(electionStatus == ElectionStatus.FINISHED && votes.size() > 0) {
+                // Inicializo el cache de los votos finales de cada mesa
+                int n_tables = maxTable - minTable + 1;
+                finalTableResults = new ElectionResults[n_tables];
+                finalTableLocks = new Object[n_tables];
+                for(int i = 0; i < n_tables; i++) {
+                    finalTableLocks[i] = new Object(); // Lock
+                }
+            }
             writeLock.unlock();
         }
-        else{
+        else {
             writeLock.unlock();
             throw new ElectionStateException(String.format("Illegal election state change. from %s to %s",this.electionStatus,electionStatus));
         }
@@ -190,6 +212,10 @@ public class ElectionManager {
                 writeLock.unlock();
                 throw new ElectionStateException("Can't register vote. Election has already finished");
         }
+
+        // Esto sirve despues para el cache de las mesas
+        minTable = Math.min(minTable, vote.getBallotBox());
+        maxTable = Math.max(maxTable, vote.getBallotBox());
         writeLock.unlock();
     }
 }
