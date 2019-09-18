@@ -32,6 +32,7 @@ public class VoteClient {
 
        List<Vote> votes = parseVotes(path);
        sendVotes(votes,ipAdd);
+       System.out.println(votes.size()+" votes registered");
     }
 
     private static List<Vote> parseVotes(String path) {
