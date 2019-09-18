@@ -28,6 +28,7 @@ public class ElectionManager {
     private ElectionResults finalNationalResults = null;
     private final Map<Province, ElectionResults> finalProvincialResults = new EnumMap<>(Province.class);
 
+    private Object tableStatsLock = new Object();
     private int maxTable = Integer.MIN_VALUE;
     private int minTable = Integer.MAX_VALUE;
     private ElectionResults[] finalTableResults;
@@ -206,16 +207,20 @@ public class ElectionManager {
                 throw new ElectionStateException("Can't register vote. Election hasn't begun!");
             case STARTED:
                 votes.add(vote);
+                writeLock.unlock();
                 notifyVote(vote);
                 break;
             case FINISHED:
                 writeLock.unlock();
-                throw new ElectionStateException("Can't register vote. Election has already finished");
+               throw new ElectionStateException("Can't register vote. Election has already finished");
         }
 
         // Esto sirve despues para el cache de las mesas
-        minTable = Math.min(minTable, vote.getBallotBox());
-        maxTable = Math.max(maxTable, vote.getBallotBox());
-        writeLock.unlock();
+        if(vote.getBallotBox() < minTable || vote.getBallotBox() > maxTable) {
+            synchronized (tableStatsLock) {
+                minTable = Math.min(minTable, vote.getBallotBox());
+                maxTable = Math.max(maxTable, vote.getBallotBox());
+            }
+        }
     }
 }

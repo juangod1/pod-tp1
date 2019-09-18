@@ -12,16 +12,22 @@ import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FiscalizationServiceImpl implements FiscalizationService, VoteObserver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FiscalizationServiceImpl.class);
     private Map<Party, Map<Integer, List<VoteListener>>> listeners;
     private ElectionManager em;
-
+    private ExecutorService executorService;
 
     public FiscalizationServiceImpl(ElectionManager manager) {
         this.em = manager;
+        // Usamos un thread pool para invocar los callbacks
+        // Porque no queremos bloquear trabajo util esperando el retorno de los callbacks
+        // que podria durar tiempo indefinido (en efecto evitamos denial of service)
+        this.executorService = Executors.newCachedThreadPool();
         this.listeners = new EnumMap<>(Party.class);
         Arrays.stream(Party.values()).forEach(p -> this.listeners.put(p, new HashMap<>()));
         manager.register(this);
@@ -45,16 +51,19 @@ public class FiscalizationServiceImpl implements FiscalizationService, VoteObser
     }
 
     private void notifyListenersOf(Party p, Vote vote) {
-        LOGGER.debug("Notifying listener of vote for {}", p);
-
         Map<Integer, List<VoteListener>> partyFiscals = listeners.get(p);
         Optional.ofNullable(partyFiscals.get(vote.getBallotBox()))
                         .ifPresent(ls -> ls.forEach(l -> {
-                        try {
-                            l.reportVote(vote);
-                        } catch (RemoteException e) {
-                            LOGGER.error("Remote exception while trying to notify vote {}: {}", vote, e.getMessage());
-                        }
+                            executorService.submit(() -> {
+                                try {
+                                    LOGGER.debug("Notifying listener of vote for {} - {}", p, vote.getBallotBox());
+                                    l.reportVote(vote);
+                                } catch (RemoteException e) {
+                                    LOGGER.error("Remote exception while trying to notify vote {}: {}", vote, e.getMessage());
+                                } catch (Exception e){
+                                    LOGGER.error("Unexpected exception trying to notify vote {}: {}", vote, e.getMessage());
+                                }
+                            });
                     }));
     }
 
